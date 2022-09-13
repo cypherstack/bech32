@@ -21,8 +21,8 @@ class SegwitCodec extends Codec<Segwit, String> {
   }
 
   @override
-  Segwit decode(String data) {
-    return SegwitDecoder().convert(data);
+  Segwit decode(String data, [String overridePrefix = '']) {
+    return SegwitDecoder().convert(data, overridePrefix);
   }
 }
 
@@ -59,10 +59,10 @@ class SegwitEncoder extends Converter<Segwit, String> with SegwitValidations {
 /// This class converts a String to a Segwit class instance.
 class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
   @override
-  Segwit convert(String input) {
+  Segwit convert(String input, [String overridePrefix = '']) {
     var decoded = bech32.decode(input);
 
-    if (isInvalidHrp(decoded.hrp)) {
+    if (isInvalidHrp(decoded.hrp, overridePrefix)) {
       throw InvalidHrp();
     }
 
@@ -97,7 +97,10 @@ class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
 
 /// Generic validations for a Segwit class.
 class SegwitValidations {
-  bool isInvalidHrp(String hrp) {
+  bool isInvalidHrp(String hrp, [String overridePrefix = '']) {
+    if (overridePrefix != '') {
+      return hrp != 'bc' && hrp != 'tb' && hrp != overridePrefix;
+    }
     return hrp != 'bc' && hrp != 'tb';
   }
 
