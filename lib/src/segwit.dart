@@ -96,7 +96,7 @@ class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
 }
 
 /// Generic validations for a Segwit class.
-class SegwitValidations {
+mixin SegwitValidations {
   bool isInvalidHrp(String hrp, [String overridePrefix = '']) {
     if (overridePrefix != '') {
       return hrp != 'bc' && hrp != 'tb' && hrp != overridePrefix;
