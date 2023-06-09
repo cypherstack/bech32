@@ -41,8 +41,12 @@ class Bech32Encoder extends Converter<Bech32, String> with Bech32Validations {
           hrp.length + data.length + 1 + Bech32Validations.checksumLength);
     }
 
-    if (hrp.isEmpty) {
+    if (hrp.length < Bech32Validations.minHrpLength) {
       throw TooShortHrp();
+    }
+
+    if (hrp.length > Bech32Validations.maxHrpLength) {
+      throw TooLongHrp();
     }
 
     if (hasOutOfRangeHrpCharacters(hrp)) {
@@ -93,6 +97,10 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
       throw TooShortHrp();
     }
 
+    if (isHrpTooLong(separatorPosition)) {
+      throw TooLongHrp();
+    }
+
     input = input.toLowerCase();
 
     var hrp = input.substring(0, separatorPosition);
@@ -131,6 +139,8 @@ class Bech32Decoder extends Converter<String, Bech32> with Bech32Validations {
 
 /// Generic validations for Bech32 standard.
 mixin Bech32Validations {
+  static const minHrpLength = 1;
+  static const maxHrpLength = 83;
   static const int maxInputLength = 90;
   static const checksumLength = 6;
 
@@ -144,7 +154,11 @@ mixin Bech32Validations {
   }
 
   bool isHrpTooShort(int separatorPosition) {
-    return separatorPosition == 0;
+    return separatorPosition < minHrpLength;
+  }
+
+  bool isHrpTooLong(int separatorPosition) {
+    return separatorPosition > maxHrpLength;
   }
 
   bool isInvalidChecksum(String hrp, List<int> data, List<int> checksum) {

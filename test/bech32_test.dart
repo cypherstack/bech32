@@ -77,7 +77,7 @@ void main() {
             throwsA(TypeMatcher<InvalidSeparator>()));
       });
 
-      test('empty hpr', () {
+      test('empty hrp', () {
         expect(() => bech32.decode('1pzry9x0s0muk'),
             throwsA(TypeMatcher<TooShortHrp>()));
       });
@@ -102,14 +102,65 @@ void main() {
             throwsA(TypeMatcher<InvalidChecksum>()));
       });
 
-      test('empty hpr, case one', () {
+      test('empty hrp, case one', () {
         expect(() => bech32.decode('10a06t8'),
             throwsA(TypeMatcher<TooShortHrp>()));
       });
 
-      test('empty hpr, case two', () {
+      test('empty hrp, case two', () {
         expect(() => bech32.decode('1qzzfhee'),
             throwsA(TypeMatcher<TooShortHrp>()));
+      });
+    });
+
+    group('encoding errors', () {
+      test('too short hrp', () {
+        var invalid = Bech32('', []);
+        expect(
+            () => bech32.encode(invalid), throwsA(TypeMatcher<TooShortHrp>()));
+      });
+
+      test('too long hrp', () {
+        var invalid = Bech32(
+            'thishumanreadablepartexceedsthemaximumlengthallowedbythespecificationsoitshouldberejected',
+            []);
+        expect(() => bech32.encode(invalid, 100),
+            throwsA(TypeMatcher<TooLongHrp>()));
+      });
+
+      test('too long', () {
+        var invalid = Bech32(
+            'thishumanreadablepartexceedsthemaximumlengthallowedbythespecificationsoitshouldberejected',
+            []);
+        expect(() => bech32.encode(invalid), throwsA(TypeMatcher<TooLong>()));
+      });
+
+      test('invalid hrp character', () {
+        var invalid = Bech32(' ', []);
+        expect(() => bech32.encode(invalid),
+            throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
+      });
+
+      test('mixed-case hrp', () {
+        var invalid = Bech32('MiXeDcAsE', []);
+        expect(() => bech32.encode(invalid), throwsA(TypeMatcher<MixedCase>()));
+      });
+    });
+
+    group('decoding errors', () {
+      test('too long hrp', () {
+        expect(
+            () => bech32.decode(
+                'thishumanreadablepartexceedsthemaximumlengthallowedbythespecificationsoitshouldberejected1qpzrx6l5p5',
+                100),
+            throwsA(TypeMatcher<TooLongHrp>()));
+      });
+
+      test('mixed case', () {
+        expect(
+            () =>
+                bech32.decode('aBcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw'),
+            throwsA(TypeMatcher<MixedCase>()));
       });
     });
 

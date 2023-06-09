@@ -1,9 +1,6 @@
-# Bech32
+# `Bech32`
 
-[![pub package](https://img.shields.io/pub/v/bech32.svg)](https://pub.dartlang.org/packages/bech32)
-[![CircleCI](https://circleci.com/gh/inapay/bech32.svg?style=svg)](https://circleci.com/gh/inapay/bech32)
-
-An implementation of the [BIP173 spec] for Segwit Bech32 address format.
+An implementation of the [BIP-173 specification](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) for general and Segwit `Bech32` encoding that optionally allows for longer input data.
 
 ## Examples
 
@@ -15,7 +12,8 @@ An implementation of the [BIP173 spec] for Segwit Bech32 address format.
   // => 1
 ```
 
-The lightning [BOLT #11 spec] can have longer inputs than the [BIP173 spec] allows. Use the positional maxLength parameter to override the validation.
+The Lightning [BOLT #11 specification](https://github.com/lightningnetwork/lightning-rfc/blob/master/11-payment-encoding.md) permits longer inputs than are allowed by BIP-173.
+Use the positional `maxLength` parameter to override the default limit, which is 90 characters for the entire encoded string.
 ```dart
   String paymentRequest = "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq8rkx3yf5tcsyz3d73gafnh3cax9rn449d9p5uxz9ezhhypd0elx87sjle52x86fux2ypatgddc6k63n7erqz25le42c4u4ecky03ylcqca784w";
   Bech32Codec codec = Bech32Codec();
@@ -27,30 +25,10 @@ The lightning [BOLT #11 spec] can have longer inputs than the [BIP173 spec] allo
   // => hrp: lnbc
 ```
 
+Even if you set `maxLength` to a longer value than the default, the human-readable encoding prefix is still limited to 83 characters.
+Modifying the length limit is not strictly compliant with BIP-173, but is fairly common in practice and consistent with other designs like the [ZIP-173 specification](https://zips.z.cash/zip-0173).
+
 ## Exceptions
 
-The specification defines a myriad of cases in which decoding and encoding 
-should fail. Please make sure your code catches all the relevant exception 
-defined in `lib/exceptions.dart`.
-
-## Installing
-
-Add it to your `pubspec.yaml`:
-
-```
-dependencies:
-  bech32: any
-```
-
-## Licence overview
-
-All files in this repository fall under the license specified in 
-[COPYING](COPYING). The project is licensed as [AGPL with a lesser clause](https://www.gnu.org/licenses/agpl-3.0.en.html). 
-It may be used within a proprietary project, but the core library and any 
-changes to it must be published online. Source code for this library must 
-always remain free for everybody to access.
-
-## Thanks
-
-[BIP173 spec]: https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
-[BOLT #11 spec]: https://github.com/lightningnetwork/lightning-rfc/blob/master/11-payment-encoding.md
+The specification defines a myriad of cases in which decoding and encoding should fail.
+Please make sure your code catches all the relevant exception defined in `lib/exceptions.dart`.
