@@ -3,6 +3,12 @@ class TooShortHrp implements Exception {
   String toString() => 'The human readable part should have non zero length.';
 }
 
+class TooLongHrp implements Exception {
+  @override
+  String toString() =>
+      'The human readable part cannot exceed the maximum length.';
+}
+
 class TooLong implements Exception {
   TooLong(this.length);
 
